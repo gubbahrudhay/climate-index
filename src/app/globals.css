@@ -1,26 +1,100 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ink: #0A0A0A;
+  --color-paper: #FFFFFF;
+  --color-hairline: #EAEAEA;
+  --color-muted: #6B6B6B;
+  --font-sans: "Inter", "Geist", system-ui, -apple-system, sans-serif;
+}
+
+/* ===== Custom Properties ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-sans: "Inter", "Geist", system-ui, -apple-system, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ===== Base Styles ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  overflow-x: hidden;
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-hairline);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* ===== Map Styles ===== */
+.rsm-geography {
+  transition: filter 0.2s ease, stroke-width 0.2s ease;
+  cursor: pointer;
+}
+
+.rsm-geography:focus {
+  outline: none;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* ===== District Panel ===== */
+#district-panel {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+/* ===== Selection Color ===== */
+::selection {
+  background-color: rgba(46, 204, 113, 0.3);
+  color: #ffffff;
 }

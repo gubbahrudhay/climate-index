@@ -2,11 +2,11 @@
 // 5-bucket colorblind-safe sequential palette for choropleth maps.
 
 const PALETTE = [
-  "#2ecc71", // green  — low index (minimal climate change signal)
-  "#f1c40f", // yellow — moderate
-  "#e67e22", // orange — elevated
-  "#e74c3c", // red    — high
-  "#922b21", // dark red — very high
+  "#FDF2E9", // very light amber — low index
+  "#F5CBA7", // light amber      — moderate
+  "#E67E22", // muted orange     — elevated
+  "#BA4A00", // burnt orange/red — high
+  "#7B241C", // deep muted red   — very high
 ] as const;
 
 /**
