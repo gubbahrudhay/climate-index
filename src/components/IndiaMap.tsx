@@ -13,6 +13,7 @@ import { getColor } from "@/lib/colorScale";
 import {
   stateNameToSlug,
   INDIA_STATES_GEO_URL,
+  INDIA_TOPO_OBJECT_STATES,
 } from "@/lib/geoUtils";
 import { useClimateStore } from "@/lib/store";
 import { StateClimate } from "@/types/climate";
@@ -44,13 +45,13 @@ const IndiaMap = memo(function IndiaMap() {
       geo: GeographyShape,
       event: React.MouseEvent
     ) => {
-      const slug = stateNameToSlug(geo.properties.st_nm || "");
+      const slug = stateNameToSlug(geo.properties.STATE || "");
       const data = stateMap.get(slug);
       if (data) {
         setTooltip({
           x: event.clientX,
           y: event.clientY,
-          name: geo.properties.st_nm || "",
+          name: geo.properties.STATE || "",
           index: data.index,
           trend: data.trend,
         });
@@ -78,7 +79,7 @@ const IndiaMap = memo(function IndiaMap() {
 
   const handleClick = useCallback(
     (geo: GeographyShape) => {
-      const slug = stateNameToSlug(geo.properties.st_nm || "");
+      const slug = stateNameToSlug(geo.properties.STATE || "");
       selectState(slug);
     },
     [selectState]
@@ -105,17 +106,11 @@ const IndiaMap = memo(function IndiaMap() {
             }}
           >
             {({ geographies }) => {
-              // Filter to the "states" object
-              const stateGeos = geographies.filter(
-                (geo) =>
-                  !geo.properties.district && geo.properties.st_nm
-              );
-              // If the filter returns nothing, use all (the states object is selected already)
-              const finalGeos =
-                stateGeos.length > 0 ? stateGeos : geographies;
+              // The state map has only states
+              const finalGeos = geographies;
 
               return finalGeos.map((geo) => {
-                const slug = stateNameToSlug(geo.properties.st_nm);
+                const slug = stateNameToSlug(geo.properties.STATE);
                 const data = stateMap.get(slug);
                 const fillColor = data
                   ? getColor(data.index)

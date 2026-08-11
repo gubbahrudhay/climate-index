@@ -1,54 +1,53 @@
 // lib/geoUtils.ts
 // Utility to map TopoJSON state names to our stateId slugs
 
-/** Maps the st_nm property from the TopoJSON to our stateId slug */
+/** Maps the STATE property from the TopoJSON to our stateId slug */
 const STATE_NAME_TO_SLUG: Record<string, string> = {
-  "Andhra Pradesh": "andhra-pradesh",
-  "Arunachal Pradesh": "arunachal-pradesh",
-  "Assam": "assam",
-  "Bihar": "bihar",
-  "Chhattisgarh": "chhattisgarh",
-  "Goa": "goa",
-  "Gujarat": "gujarat",
-  "Haryana": "haryana",
-  "Himachal Pradesh": "himachal-pradesh",
-  "Jharkhand": "jharkhand",
-  "Karnataka": "karnataka",
-  "Kerala": "kerala",
-  "Madhya Pradesh": "madhya-pradesh",
-  "Maharashtra": "maharashtra",
-  "Manipur": "manipur",
-  "Meghalaya": "meghalaya",
-  "Mizoram": "mizoram",
-  "Nagaland": "nagaland",
-  "Odisha": "odisha",
-  "Punjab": "punjab",
-  "Rajasthan": "rajasthan",
-  "Sikkim": "sikkim",
-  "Tamil Nadu": "tamil-nadu",
-  "Telangana": "telangana",
-  "Tripura": "tripura",
-  "Uttar Pradesh": "uttar-pradesh",
-  "Uttarakhand": "uttarakhand",
-  "West Bengal": "west-bengal",
-  "Delhi": "delhi",
-  "Jammu and Kashmir": "jammu-and-kashmir",
-  "Ladakh": "ladakh",
-  "Puducherry": "puducherry",
-  "Chandigarh": "chandigarh",
-  "Andaman and Nicobar Islands": "andaman-and-nicobar",
-  "Dadra and Nagar Haveli and Daman and Diu": "dadra-nagar-haveli-daman-diu",
-  "Lakshadweep": "lakshadweep",
+  "ANDHRA PRADESH": "andhra-pradesh",
+  "ARUNACHAL PRADESH": "arunachal-pradesh",
+  "ASSAM": "assam",
+  "BIHAR": "bihar",
+  "CHHATTISGARH": "chhattisgarh",
+  "GOA": "goa",
+  "GUJARAT": "gujarat",
+  "HARYANA": "haryana",
+  "HIMACHAL PRADESH": "himachal-pradesh",
+  "JHARKHAND": "jharkhand",
+  "KARNATAKA": "karnataka",
+  "KERALA": "kerala",
+  "MADHYA PRADESH": "madhya-pradesh",
+  "MAHARASHTRA": "maharashtra",
+  "MANIPUR": "manipur",
+  "MEGHALAYA": "meghalaya",
+  "MIZORAM": "mizoram",
+  "NAGALAND": "nagaland",
+  "ODISHA": "odisha",
+  "PUNJAB": "punjab",
+  "RAJASTHAN": "rajasthan",
+  "SIKKIM": "sikkim",
+  "TAMIL NADU": "tamil-nadu",
+  "TELANGANA": "telangana",
+  "TRIPURA": "tripura",
+  "UTTAR PRADESH": "uttar-pradesh",
+  "UTTARAKHAND": "uttarakhand",
+  "WEST BENGAL": "west-bengal",
+  "DELHI": "delhi",
+  "JAMMU AND KASHMIR": "jammu-and-kashmir",
+  "LADAKH": "ladakh",
+  "PUDUCHERRY": "puducherry",
+  "CHANDIGARH": "chandigarh",
+  "ANDAMAN & NICOBAR": "andaman-and-nicobar",
+  "DADRA & NAGAR HAVELI & DAMAN & DIU": "dadra-nagar-haveli-daman-diu",
+  "LAKSHADWEEP": "lakshadweep",
 };
 
 export function stateNameToSlug(stName: string): string {
+  if (!stName) return "";
   return STATE_NAME_TO_SLUG[stName] || stName.toLowerCase().replace(/\s+/g, "-");
 }
 
-export function getDistrictGeoUrl(stateSlug: string): string {
-  return `/geo/districts/${stateSlug}.json`;
-}
-
 export const INDIA_STATES_GEO_URL = "/geo/india-states.json";
-export const INDIA_TOPO_OBJECT_STATES = "states";
-export const DISTRICT_TOPO_OBJECT = "districts";
+export const INDIA_DISTRICTS_GEO_URL = "/geo/india-districts.json";
+
+export const INDIA_TOPO_OBJECT_STATES = "STATE_BOUNDARY";
+export const INDIA_TOPO_OBJECT_DISTRICTS = "DISTRICT_BOUNDARY";

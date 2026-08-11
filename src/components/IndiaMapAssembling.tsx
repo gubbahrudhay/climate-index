@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useRef, memo, useState, useEffect } from "react";
+import React, { useRef, memo } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import IndiaMap from "./IndiaMap";
 import StateDrilldown from "./StateDrilldown";
-import DistrictPanel from "./DistrictPanel";
 import { useClimateStore } from "@/lib/store";
 import { getBucketLabels } from "@/lib/colorScale";
 
@@ -13,11 +12,6 @@ const IndiaMapAssembling = memo(function IndiaMapAssembling() {
   const mapSectionRef = useRef<HTMLDivElement>(null);
   const drillLevel = useClimateStore((s) => s.drillLevel);
   const buckets = getBucketLabels();
-  
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const { scrollYProgress } = useScroll({
     target: mapSectionRef,
@@ -63,10 +57,12 @@ const IndiaMapAssembling = memo(function IndiaMapAssembling() {
 
           {/* Map container with Framer Motion scale */}
           <motion.div 
-            className="relative mx-auto w-full max-w-2xl origin-center"
+            className={`relative mx-auto w-full origin-center transition-[max-width] duration-700 ${
+              drillLevel === "national" ? "max-w-2xl" : "max-w-5xl"
+            }`}
             style={{ 
-              scale: mounted && drillLevel === "national" ? scale : 1,
-              pointerEvents: mounted && drillLevel === "national" ? pointerEvents as any : "auto" 
+              scale: drillLevel === "national" ? scale : 1,
+              pointerEvents: drillLevel === "national" ? pointerEvents as any : "auto" 
             }}
           >
             {drillLevel === "national" ? (
@@ -91,8 +87,6 @@ const IndiaMapAssembling = memo(function IndiaMapAssembling() {
         </div>
       </div>
 
-      {/* District detail panel */}
-      <DistrictPanel />
     </div>
   );
 });

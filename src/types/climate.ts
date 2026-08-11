@@ -32,6 +32,8 @@ export interface StateClimate {
   stateName: string;
   index: number;              // aggregate of its districts
   trend: "up" | "down" | "flat";
+  history: TimeSeriesPoint[]; // state level aggregated history
+  components: ComponentScore; // state level aggregated components
   districts: string[];        // districtIds
 }
 
