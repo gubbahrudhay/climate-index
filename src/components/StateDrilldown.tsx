@@ -245,7 +245,6 @@ const StateDrilldown = memo(function StateDrilldown() {
               center={position.coordinates} 
               zoom={position.zoom}
               onMoveEnd={handleMoveEnd}
-              filterZoomEvent={(evt) => evt.type !== 'wheel' && evt.type !== 'mousewheel' && evt.type !== 'DOMMouseScroll'}
             >
               <Geographies geography={geoUrl}>
                 {({ geographies }) => {

@@ -134,7 +134,6 @@ const IndiaMap = memo(function IndiaMap() {
           zoom={position.zoom}
           center={position.coordinates}
           onMoveEnd={handleMoveEnd}
-          filterZoomEvent={(evt) => evt.type !== 'wheel' && evt.type !== 'mousewheel' && evt.type !== 'DOMMouseScroll'}
         >
           <Geographies
             geography={INDIA_STATES_GEO_URL}
