@@ -104,19 +104,25 @@ const Hero = memo(function Hero() {
           </p>
         </div>
 
-        {/* Scroll affordance */}
-        <div
-          className={`flex flex-col items-center gap-3 transition-all duration-1000 delay-700 ${
-            isVisible
-              ? "translate-y-0 opacity-100"
-              : "translate-y-4 opacity-0"
-          }`}
+      </div>
+
+      {/* Scroll affordance */}
+      <div
+        className={`absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center transition-all duration-1000 delay-700 ${
+          isVisible
+            ? "translate-y-0 opacity-100"
+            : "translate-y-4 opacity-0"
+        }`}
+      >
+        <button
+          onClick={() => {
+            document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="h-10 px-5 bg-[#112a57] hover:bg-[#0c1f40] text-white rounded-md text-sm font-medium transition-transform hover:scale-105 active:scale-95 shadow-md flex items-center justify-center gap-2 whitespace-nowrap"
         >
-          <p className="text-xs font-medium tracking-wide text-muted uppercase">
-            Scroll to explore
-          </p>
-          <div className="animate-bounce text-muted">↓</div>
-        </div>
+          Explore the map
+          <span className="text-white/70">↓</span>
+        </button>
       </div>
     </section>
   );

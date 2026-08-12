@@ -39,9 +39,9 @@ function getInterpretation(
     parts.push("a trend toward drier conditions");
 
   if (heavyRain > 1.5)
-    parts.push("more frequent heavy rainfall events");
+    parts.push("more frequent precipitation events");
   else if (heavyRain > 0.5)
-    parts.push("a moderate rise in heavy rainfall");
+    parts.push("a moderate rise in precipitation");
 
   if (parts.length === 0) {
     return `${districtName} shows a ${TREND_TEXT[trend]} climate index trend over the last decade, with relatively mild changes across all components.`;
@@ -202,10 +202,10 @@ const DistrictPanel = memo(function DistrictPanel() {
                 description="Frequency of extreme low temperature days"
               />
               <ComponentGauge
-                label="Heavy Rainfall"
+                label="Precipitation"
                 value={district.components.heavyRain}
                 icon="🌧️"
-                description="Maximum 5-day rainfall intensity"
+                description="Maximum 5-day precipitation intensity"
               />
               <ComponentGauge
                 label="Drought"

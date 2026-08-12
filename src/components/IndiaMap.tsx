@@ -35,6 +35,21 @@ const TREND_ARROWS: Record<string, string> = {
 const IndiaMap = memo(function IndiaMap() {
   const selectState = useClimateStore((s) => s.selectState);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
+  const [position, setPosition] = useState({ coordinates: [82, 22] as [number, number], zoom: 1 });
+
+  const handleZoomIn = () => {
+    if (position.zoom >= 4) return;
+    setPosition((pos) => ({ ...pos, zoom: pos.zoom * 1.5 }));
+  };
+
+  const handleZoomOut = () => {
+    if (position.zoom <= 1) return;
+    setPosition((pos) => ({ ...pos, zoom: pos.zoom / 1.5 }));
+  };
+
+  const handleMoveEnd = (newPosition: { coordinates: [number, number]; zoom: number }) => {
+    setPosition(newPosition);
+  };
 
   const statesData = getStatesClimate();
   const stateMap = new Map<string, StateClimate>();
@@ -87,6 +102,24 @@ const IndiaMap = memo(function IndiaMap() {
 
   return (
     <div className="relative w-full" id="india-map-container">
+      {/* Zoom controls */}
+      <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+        <button 
+          onClick={handleZoomIn} 
+          className="w-8 h-8 flex items-center justify-center bg-paper border border-hairline shadow-sm text-ink rounded font-bold hover:bg-slate-50 transition-colors"
+          aria-label="Zoom In"
+        >
+          +
+        </button>
+        <button 
+          onClick={handleZoomOut} 
+          className="w-8 h-8 flex items-center justify-center bg-paper border border-hairline shadow-sm text-ink rounded font-bold hover:bg-slate-50 transition-colors"
+          aria-label="Zoom Out"
+        >
+          -
+        </button>
+      </div>
+
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
@@ -97,7 +130,12 @@ const IndiaMap = memo(function IndiaMap() {
         height={900}
         style={{ width: "100%", height: "auto" }}
       >
-        <ZoomableGroup>
+        <ZoomableGroup
+          zoom={position.zoom}
+          center={position.coordinates}
+          onMoveEnd={handleMoveEnd}
+          filterZoomEvent={(evt) => evt.type !== 'wheel' && evt.type !== 'mousewheel' && evt.type !== 'DOMMouseScroll'}
+        >
           <Geographies
             geography={INDIA_STATES_GEO_URL}
             parseGeographies={(geos) => {

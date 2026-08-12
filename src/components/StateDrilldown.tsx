@@ -57,9 +57,9 @@ function getInterpretation(
     parts.push("a trend toward drier conditions");
 
   if (heavyRain > 1.5)
-    parts.push("more frequent heavy rainfall events");
+    parts.push("more frequent precipitation events");
   else if (heavyRain > 0.5)
-    parts.push("a moderate rise in heavy rainfall");
+    parts.push("a moderate rise in precipitation");
 
   if (parts.length === 0) {
     return `${districtName} shows a ${TREND_TEXT[trend]} climate index trend over the last decade, with relatively mild changes across all components.`;
@@ -78,6 +78,19 @@ const StateDrilldown = memo(function StateDrilldown() {
   
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [position, setPosition] = useState({ coordinates: [82, 22] as [number, number], zoom: 1 });
+
+  const handleZoomIn = () => {
+    setPosition((pos) => ({ ...pos, zoom: pos.zoom * 1.5 }));
+  };
+
+  const handleZoomOut = () => {
+    setPosition((pos) => ({ ...pos, zoom: pos.zoom / 1.5 }));
+  };
+
+  const handleMoveEnd = (newPosition: { coordinates: [number, number]; zoom: number }) => {
+    setPosition(newPosition);
+  };
 
   // Get state info
   const stateClimate = selectedStateId
@@ -106,8 +119,13 @@ const StateDrilldown = memo(function StateDrilldown() {
     setIsLoaded(false);
     // Small delay for animation
     const timer = setTimeout(() => setIsLoaded(true), 100);
+    
+    if (stateMeta) {
+      setPosition({ coordinates: stateMeta.center as [number, number], zoom: stateMeta.zoom });
+    }
+    
     return () => clearTimeout(timer);
-  }, [selectedStateId]);
+  }, [selectedStateId, stateMeta]);
 
   const findDistrictData = useCallback(
     (geoName: string): DistrictClimate | undefined => {
@@ -196,6 +214,24 @@ const StateDrilldown = memo(function StateDrilldown() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         {/* Left Column: The Map */}
         <div className="relative h-[600px] w-full rounded-2xl border border-hairline bg-paper overflow-hidden">
+          {/* Zoom controls */}
+          <div className="absolute top-4 right-4 flex flex-col gap-2 z-10">
+            <button 
+              onClick={handleZoomIn} 
+              className="w-8 h-8 flex items-center justify-center bg-paper border border-hairline shadow-sm text-ink rounded font-bold hover:bg-slate-50 transition-colors"
+              aria-label="Zoom In"
+            >
+              +
+            </button>
+            <button 
+              onClick={handleZoomOut} 
+              className="w-8 h-8 flex items-center justify-center bg-paper border border-hairline shadow-sm text-ink rounded font-bold hover:bg-slate-50 transition-colors"
+              aria-label="Zoom Out"
+            >
+              -
+            </button>
+          </div>
+
           <ComposableMap
             projection="geoMercator"
             projectionConfig={{
@@ -205,7 +241,12 @@ const StateDrilldown = memo(function StateDrilldown() {
             height={600}
             style={{ width: "100%", height: "100%" }}
           >
-            <ZoomableGroup center={stateMeta.center} zoom={stateMeta.zoom}>
+            <ZoomableGroup 
+              center={position.coordinates} 
+              zoom={position.zoom}
+              onMoveEnd={handleMoveEnd}
+              filterZoomEvent={(evt) => evt.type !== 'wheel' && evt.type !== 'mousewheel' && evt.type !== 'DOMMouseScroll'}
+            >
               <Geographies geography={geoUrl}>
                 {({ geographies }) => {
                   const stateGeos = geographies.filter(
@@ -229,7 +270,7 @@ const StateDrilldown = memo(function StateDrilldown() {
                         geography={geo}
                         fill={fillColor}
                         stroke={isSelected ? "var(--color-ink)" : "var(--color-paper)"}
-                        strokeWidth={isSelected ? 2.5 / stateMeta.zoom : 0.5 / stateMeta.zoom}
+                        strokeWidth={isSelected ? 2.5 / position.zoom : 0.5 / position.zoom}
                         className="cursor-pointer outline-none transition-all duration-200"
                         style={{
                           default: { fill: fillColor, outline: "none" },
@@ -238,7 +279,7 @@ const StateDrilldown = memo(function StateDrilldown() {
                             outline: "none",
                             filter: "brightness(0.95)",
                             stroke: "var(--color-ink)",
-                            strokeWidth: 1.5 / stateMeta.zoom,
+                            strokeWidth: 1.5 / position.zoom,
                           },
                           pressed: {
                             fill: fillColor,
@@ -351,10 +392,10 @@ const StateDrilldown = memo(function StateDrilldown() {
                     description="Frequency of extreme low temperature days"
                   />
                   <ComponentGauge
-                    label="Heavy Rainfall"
+                    label="Precipitation"
                     value={districtData.components.heavyRain}
                     icon="🌧️"
-                    description="Maximum 5-day rainfall intensity"
+                    description="Maximum 5-day precipitation intensity"
                   />
                   <ComponentGauge
                     label="Drought"
@@ -466,16 +507,22 @@ const StateDrilldown = memo(function StateDrilldown() {
                     description="Avg frequency of extreme cold across districts"
                   />
                   <ComponentGauge
-                    label="Heavy Rainfall"
+                    label="Precipitation"
                     value={stateClimate.components.heavyRain}
                     icon="🌧️"
-                    description="Avg maximum 5-day rainfall intensity"
+                    description="Avg maximum 5-day precipitation intensity"
                   />
                   <ComponentGauge
                     label="Drought"
                     value={stateClimate.components.drought}
                     icon="☀️"
                     description="Avg consecutive dry days"
+                  />
+                  <ComponentGauge
+                    label="High Wind"
+                    value={stateClimate.components.highWind}
+                    icon="💨"
+                    description="Avg frequency of extreme high wind events"
                   />
                 </div>
               </div>

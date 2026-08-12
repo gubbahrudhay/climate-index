@@ -1,46 +1,22 @@
 "use client";
 
-import React, { useRef, memo } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import React, { memo } from "react";
+import { motion } from "framer-motion";
 import IndiaMap from "./IndiaMap";
 import StateDrilldown from "./StateDrilldown";
 import { useClimateStore } from "@/lib/store";
 import { getBucketLabels } from "@/lib/colorScale";
 
 const IndiaMapAssembling = memo(function IndiaMapAssembling() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const mapSectionRef = useRef<HTMLDivElement>(null);
   const drillLevel = useClimateStore((s) => s.drillLevel);
   const buckets = getBucketLabels();
 
-  const { scrollYProgress } = useScroll({
-    target: mapSectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  // Use an exponential curve so the zoom speed feels constant.
-  // v goes 0 -> 1. Math.pow(0.01, v) goes 1 -> 0.01.
-  // 100 * 1 = 100 (start scale). 100 * 0.01 = 1 (end scale).
-  const scale = useTransform(scrollYProgress, (v) => 100 * Math.pow(0.01, v));
-  
-  // Disable pointer events on the map until scroll is close to 1 (fully zoomed out)
-  const pointerEvents = useTransform(scrollYProgress, (v) => 
-    v > 0.95 ? "auto" : "none"
-  );
-
   return (
-    <div ref={containerRef}>
-      {/* Scroll spacer + animated section */}
+    <div>
       <div
-        ref={mapSectionRef}
-        className="relative"
+        className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-8"
         id="map-section"
-        style={{ minHeight: "250vh" }}
       >
-        {/* Sticky container that holds the map */}
-        <div
-          className="sticky top-0 flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-8"
-        >
           {/* Section header */}
           <div className="mb-8 text-center z-10 relative">
             <h2 className="text-3xl font-bold text-ink md:text-4xl">
@@ -61,8 +37,7 @@ const IndiaMapAssembling = memo(function IndiaMapAssembling() {
               drillLevel === "national" ? "max-w-2xl" : "max-w-5xl"
             }`}
             style={{ 
-              scale: drillLevel === "national" ? scale : 1,
-              pointerEvents: drillLevel === "national" ? pointerEvents as any : "auto" 
+              pointerEvents: "auto" 
             }}
           >
             {drillLevel === "national" ? (
@@ -84,9 +59,7 @@ const IndiaMapAssembling = memo(function IndiaMapAssembling() {
               </div>
             ))}
           </div>
-        </div>
       </div>
-
     </div>
   );
 });
