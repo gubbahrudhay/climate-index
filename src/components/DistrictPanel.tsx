@@ -6,6 +6,7 @@ import { getDistrictClimate, getStateClimate } from "@/lib/fakeData";
 import { getColor } from "@/lib/colorScale";
 import ComponentGauge from "./ComponentGauge";
 import TrendSparkline from "./TrendSparkline";
+import { useTemperatureData, getLatestNonNull } from "@/lib/temperatureService";
 
 const TREND_TEXT: Record<string, string> = {
   up: "rising",
@@ -64,6 +65,14 @@ const DistrictPanel = memo(function DistrictPanel() {
     ? getStateClimate(selectedStateId)
     : null;
 
+  const { data: tempData, loading: tempLoading } = useTemperatureData(
+    "district",
+    district?.districtName
+  );
+
+  const t90sValue = tempData ? getLatestNonNull(tempData.T90S) : null;
+  const t10sValue = tempData ? getLatestNonNull(tempData.T10S) : null;
+
   useEffect(() => {
     if (drillLevel === "district" && district) {
       // Trigger animation after mount
@@ -83,7 +92,7 @@ const DistrictPanel = memo(function DistrictPanel() {
   const interpretation = getInterpretation(
     district.districtName,
     district.trend,
-    district.components.highTemp,
+    t90sValue ?? 0,
     district.components.drought,
     district.components.heavyRain
   );
@@ -190,16 +199,18 @@ const DistrictPanel = memo(function DistrictPanel() {
             </p>
             <div className="space-y-4">
               <ComponentGauge
-                label="High Temperature"
-                value={district.components.highTemp}
+                label="Extreme Heat (T90S)"
+                value={t90sValue}
                 icon="🌡️"
-                description="Frequency of extreme high temperature days"
+                description="Standardized anomaly of 90th percentile max temperature"
+                loading={tempLoading}
               />
               <ComponentGauge
-                label="Low Temperature"
-                value={district.components.lowTemp}
+                label="Extreme Cold (T10S)"
+                value={t10sValue}
                 icon="❄️"
-                description="Frequency of extreme low temperature days"
+                description="Standardized anomaly of 10th percentile min temperature"
+                loading={tempLoading}
               />
               <ComponentGauge
                 label="Precipitation"

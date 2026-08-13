@@ -16,6 +16,7 @@ import { useClimateStore } from "@/lib/store";
 import { DistrictClimate } from "@/types/climate";
 import ComponentGauge from "./ComponentGauge";
 import TrendSparkline from "./TrendSparkline";
+import { useTemperatureData, getLatestNonNull } from "@/lib/temperatureService";
 
 interface TooltipState {
   x: number;
@@ -106,6 +107,22 @@ const StateDrilldown = memo(function StateDrilldown() {
   const districtData = selectedDistrictId
     ? getDistrictClimate(selectedDistrictId)
     : null;
+
+  const { data: stateTempData, loading: stateTempLoading } = useTemperatureData(
+    "state",
+    stateClimate?.stateName
+  );
+
+  const stateT90sValue = stateTempData ? getLatestNonNull(stateTempData.T90S) : null;
+  const stateT10sValue = stateTempData ? getLatestNonNull(stateTempData.T10S) : null;
+
+  const { data: districtTempData, loading: districtTempLoading } = useTemperatureData(
+    "district",
+    districtData?.districtName
+  );
+
+  const districtT90sValue = districtTempData ? getLatestNonNull(districtTempData.T90S) : null;
+  const districtT10sValue = districtTempData ? getLatestNonNull(districtTempData.T10S) : null;
 
   // Build a lookup by district name (normalized)
   const districtMap = new Map<string, DistrictClimate>();
@@ -379,16 +396,18 @@ const StateDrilldown = memo(function StateDrilldown() {
                 </p>
                 <div className="space-y-4">
                   <ComponentGauge
-                    label="High Temperature"
-                    value={districtData.components.highTemp}
+                    label="Extreme Heat (T90S)"
+                    value={districtT90sValue}
                     icon="🌡️"
-                    description="Frequency of extreme high temperature days"
+                    description="Standardized anomaly of 90th percentile max temperature"
+                    loading={districtTempLoading}
                   />
                   <ComponentGauge
-                    label="Low Temperature"
-                    value={districtData.components.lowTemp}
+                    label="Extreme Cold (T10S)"
+                    value={districtT10sValue}
                     icon="❄️"
-                    description="Frequency of extreme low temperature days"
+                    description="Standardized anomaly of 10th percentile min temperature"
+                    loading={districtTempLoading}
                   />
                   <ComponentGauge
                     label="Precipitation"
@@ -426,7 +445,7 @@ const StateDrilldown = memo(function StateDrilldown() {
                   Interpretation
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {getInterpretation(districtData.districtName, districtData.trend, districtData.components.highTemp, districtData.components.drought, districtData.components.heavyRain)}
+                  {getInterpretation(districtData.districtName, districtData.trend, districtT90sValue ?? 0, districtData.components.drought, districtData.components.heavyRain)}
                 </p>
               </div>
             </>
@@ -494,16 +513,18 @@ const StateDrilldown = memo(function StateDrilldown() {
                 </p>
                 <div className="space-y-4">
                   <ComponentGauge
-                    label="High Temperature"
-                    value={stateClimate.components.highTemp}
+                    label="Extreme Heat (T90S)"
+                    value={stateT90sValue}
                     icon="🌡️"
-                    description="Avg frequency of extreme heat across districts"
+                    description="Standardized anomaly of 90th percentile max temperature"
+                    loading={stateTempLoading}
                   />
                   <ComponentGauge
-                    label="Low Temperature"
-                    value={stateClimate.components.lowTemp}
+                    label="Extreme Cold (T10S)"
+                    value={stateT10sValue}
                     icon="❄️"
-                    description="Avg frequency of extreme cold across districts"
+                    description="Standardized anomaly of 10th percentile min temperature"
+                    loading={stateTempLoading}
                   />
                   <ComponentGauge
                     label="Precipitation"

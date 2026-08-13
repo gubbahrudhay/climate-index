@@ -4,20 +4,24 @@ import React, { memo } from "react";
 
 interface ComponentGaugeProps {
   label: string;
-  value: number;
+  value: number | null;
   icon: string;
   /** Tooltip description */
   description?: string;
+  loading?: boolean;
 }
 
 /**
  * Maps a standardized anomaly value (-3 to +3) to a gauge width and color.
  */
-function getGaugeStyle(value: number): {
+function getGaugeStyle(value: number | null): {
   width: string;
   color: string;
   bgColor: string;
 } {
+  if (value === null) {
+    return { width: "0%", color: "var(--color-hairline)", bgColor: "var(--color-hairline)" };
+  }
   // Normalize value from [-3, 3] to [0, 1]
   const normalized = Math.max(0, Math.min(1, (value + 3) / 6));
   const width = `${Math.max(5, normalized * 100)}%`;
@@ -30,6 +34,7 @@ const ComponentGauge = memo(function ComponentGauge({
   value,
   icon,
   description,
+  loading = false,
 }: ComponentGaugeProps) {
   const { width, color, bgColor } = getGaugeStyle(value);
 
@@ -43,12 +48,20 @@ const ComponentGauge = memo(function ComponentGauge({
         <span
           className="text-xs font-bold tabular-nums text-ink"
         >
-          {value > 0 ? "+" : ""}
-          {value.toFixed(2)}
+          {loading ? (
+            <span className="animate-pulse text-muted">...</span>
+          ) : value !== null && typeof value === 'number' ? (
+            <>
+              {value > 0 ? "+" : ""}
+              {value.toFixed(2)}
+            </>
+          ) : (
+            <span className="text-muted">N/A</span>
+          )}
         </span>
       </div>
       <div
-        className="h-1.5 w-full overflow-hidden bg-hairline"
+        className={`h-1.5 w-full overflow-hidden ${loading ? 'animate-pulse' : ''} bg-hairline`}
       >
         <div
           className="h-full transition-all duration-700 ease-out bg-ink"

@@ -1,0 +1,1 @@
+{"india": {"shape": [36, 12, 1], "chunks": [36, 12, 1]}, "state": {"shape": [36, 12, 36], "chunks": [36, 12, 36]}, "district": {"shape": [36, 12, 782], "chunks": [18, 6, 391]}}
